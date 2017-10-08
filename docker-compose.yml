@@ -1,0 +1,32 @@
+version: "3"
+services:
+  products-api:
+    build: ./products/products-api/
+    command: npm run dev
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./products/products-api:/app
+    networks:
+      - products-service
+      - public
+
+  products-redis:
+    image: redis:3.2.11-alpine
+    ports: 
+      - "6379"
+    networks: 
+      - products-service
+
+  products-mongodb:
+    image: mongo:3.0.4
+    ports:
+      - "27017"
+    volumes:
+      - './temp/products/data:/data/db'
+    networks:
+      - products-service
+
+networks: 
+  products-service:
+  public:
