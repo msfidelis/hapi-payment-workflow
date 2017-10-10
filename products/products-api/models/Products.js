@@ -3,9 +3,6 @@
 const db = require('../configs/mongo');
 const mongo = db.getConnection('products');
 
-/**
- * Schena de livros
- */
 const productsSchema = mongo.Schema({
     name: { type: String, required: true, trim: true },
     description: { type: String, required: true, trim: true },
