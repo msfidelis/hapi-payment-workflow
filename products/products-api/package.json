@@ -11,8 +11,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "bluebird": "^3.5.1",
     "hapi": "^16.6.2",
     "hapi-router": "^3.5.0",
+    "mongoose": "^4.12.1",
     "nodemon": "^1.12.1"
   }
 }
