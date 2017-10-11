@@ -1,27 +1,35 @@
 'use strict';
 
+const Joi = require('joi');
+const Boom = require('boom');
+
 const ProductSchema = require('../models/Products');
 
 module.exports = [
-
     {
         method: "POST",
         path: "/products",
         handler: (req, res) => {
 
-            let newProduct = new ProductSchema(req.payload);
+            let product = new ProductSchema(req.payload);
 
-            newProduct.save()
-                .then(product => {
-                    res(product).code(201);
-                })
-                .catch(err => {
-                    console.log(err);
-                    res(err);
-                });
+            product.save()
+            .then(newProduct => {
+                res(newProduct).code(201);
+            }).catch(err => {
+                Boom.internal(err);
+            });
 
-
+        },
+        config: {
+            validate: {
+                payload: {
+                    name: Joi.string().required(),
+                    description: Joi.string().required(),
+                    price: Joi.number().required(),
+                    tags: Joi.array()
+                }
+            }
         }
     }
-
 ];
