@@ -16,5 +16,9 @@
 * [Artigo]()
 * [Código](https://github.com/msfidelis/hapi-payment-workflow/tree/v1)
 
+### Hapi.JS — Criando Microservices #02 :: CRUD de Produtos
+* [Artigo]()
+* [Código](https://github.com/msfidelis/hapi-payment-workflow/tree/v2)
+
 
 
