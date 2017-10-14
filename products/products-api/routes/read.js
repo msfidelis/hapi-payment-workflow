@@ -40,13 +40,31 @@ module.exports = [
                 query.name =  new RegExp(`^${req.query.name}`, "i");
             }
 
-            ProductsSchema
-                .paginate(query, options)
-                .then(products => {
-                    res(products);
-                })
-                .catch(err => {
-                    res(err);
+            let searchhash = hash.sha1(JSON.stringify(query) + JSON.stringify(options));
+
+            cache.getAsync(searchhash)
+                .then(listcache => {
+                    if (listcache) {
+                        console.log("Veio do cache");
+                        listcache = JSON.parse(listcache);
+                        res(listcache);
+                    } else {
+                        console.log("Não veio do cache");
+                        ProductsSchema
+                            .paginate(query, options)
+                            .then(products => {
+                                cache.setAsync(searchhash, JSON.stringify(products), 'EX', 10)
+                                    .then(success => {
+                                        res(products);
+                                    }).catch(err => {
+                                        res(Boom.internal(err));
+                                    });
+                            })
+                            .catch(err => {
+                                res(err);
+                            });
+
+                    }
                 });
 
         },
@@ -90,7 +108,7 @@ module.exports = [
                             res(Boom.notFound());
                         } else {
                             // Seta o item no Cache após encontrar o mesmo
-                            cache.setAsync(productHash, JSON.stringify(product)) 
+                            cache.setAsync(productHash, JSON.stringify(product),'EX', 3) 
                             .then(success => {
                                 res(product);
                             });
