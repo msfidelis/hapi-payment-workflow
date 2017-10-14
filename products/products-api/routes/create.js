@@ -2,6 +2,9 @@
 
 const Joi = require('joi');
 const Boom = require('boom');
+const hash = require('take-my-hash');
+
+const cache = require('../configs/cache');
 
 const ProductSchema = require('../models/Products');
 
@@ -15,9 +18,20 @@ module.exports = [
 
             product.save()
             .then(newProduct => {
-                res(newProduct).code(201);
+
+                let productHash = hash.sha1('products' + newProduct._id);
+
+                //Seta o novo item no Redis - Cria já cacheando
+                cache.setAsync(productHash, JSON.stringify(newProduct), 'EX', 100)
+                    .then(success => {
+                        res(newProduct).code(201);
+                    }).catch(err => {
+                        console.log(err);
+                        res(Boom.internal(err));
+                    });
+                
             }).catch(err => {
-                Boom.internal(err);
+                res(Boom.internal(err));
             });
 
         },
