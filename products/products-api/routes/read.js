@@ -11,9 +11,6 @@ const ProductsSchema = require('../models/Products');
 
 module.exports = [
     
-    /**
-     * Product Lists
-     */
     {
         method: "GET",
         path: "/products",
@@ -53,7 +50,7 @@ module.exports = [
                         ProductsSchema
                             .paginate(query, options)
                             .then(products => {
-                                cache.setAsync(searchhash, JSON.stringify(products), 'EX', 10)
+                                cache.setAsync(searchhash, JSON.stringify(products), 'EX', 120)
                                     .then(success => {
                                         res(products);
                                     }).catch(err => {
@@ -63,7 +60,6 @@ module.exports = [
                             .catch(err => {
                                 res(err);
                             });
-
                     }
                 });
 
@@ -80,9 +76,6 @@ module.exports = [
         }
     },
 
-    /**
-     * Product Detail
-     */
     {
         method: "GET",
         path: "/products/{id}",
@@ -95,12 +88,10 @@ module.exports = [
             .then(productcache => {
                 //Verifica se o item existe no cache
                 if (productcache) {
-                    console.log("Veio do cache");
                     productcache = JSON.parse(productcache);
                     res(productcache);
                 } else {
                     //Caso não exista no cache, o MongoDB é consultado
-                    console.log("Não veio do cache");
                     ProductsSchema.findOne({ "_id": req.params.id })
                     .then(product => {
                                 
@@ -108,7 +99,7 @@ module.exports = [
                             res(Boom.notFound());
                         } else {
                             // Seta o item no Cache após encontrar o mesmo
-                            cache.setAsync(productHash, JSON.stringify(product),'EX', 3) 
+                            cache.setAsync(productHash, JSON.stringify(product),'EX', 100) 
                             .then(success => {
                                 res(product);
                             });
