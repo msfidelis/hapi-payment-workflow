@@ -2,6 +2,10 @@
 
 const Joi = require('joi');
 const Boom = require('boom');
+const Hash = require('take-my-hash');
+
+const cache = require('../configs/cache');
+const hash = require('take-my-hash');
 
 const ProductsSchema = require('../models/Products');
 
@@ -66,20 +70,41 @@ module.exports = [
         path: "/products/{id}",
         handler: (req, res) => {
 
-            ProductsSchema.findOne({ "_id": req.params.id })
-                .then(product => {
+            let productHash = hash.sha1('products' + req.params.id);
+            
+            //Procura o id do produto no cache
+            cache.getAsync(productHash)
+            .then(productcache => {
+                //Verifica se o item existe no cache
+                if (productcache) {
+                    console.log("Veio do cache");
+                    productcache = JSON.parse(productcache);
+                    res(productcache);
+                } else {
+                    //Caso não exista no cache, o MongoDB é consultado
+                    console.log("Não veio do cache");
+                    ProductsSchema.findOne({ "_id": req.params.id })
+                    .then(product => {
+                                
+                        if (!product) {
+                            res(Boom.notFound());
+                        } else {
+                            // Seta o item no Cache após encontrar o mesmo
+                            cache.setAsync(productHash, JSON.stringify(product)) 
+                            .then(success => {
+                                res(product);
+                            });
+                        }
+    
+                    }).catch(err => {
+                        res(Boom.notFound(err));
+                    });
+                }
 
-                    if (!product) {
-                        res(Boom.notFound());
-                    } else {
-                        res(product);
-                    }
-
-                })
-                .catch(err => {
-                    res(Boom.notFound(err));
-                });
-
+            }).catch(err => {
+                console.log(err);
+                res(Boom.internal(err));
+            });
         },
         config: {
             validate: {

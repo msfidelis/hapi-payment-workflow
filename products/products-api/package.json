@@ -18,6 +18,8 @@
     "joi": "^11.3.4",
     "mongoose": "^4.12.1",
     "mongoose-paginate": "^5.0.3",
-    "nodemon": "^1.12.1"
+    "nodemon": "^1.12.1",
+    "redis": "^2.8.0",
+    "take-my-hash": "^1.0.0"
   }
 }
