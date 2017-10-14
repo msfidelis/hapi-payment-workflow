@@ -88,6 +88,7 @@ module.exports = [
             .then(productcache => {
                 //Verifica se o item existe no cache
                 if (productcache) {
+                    console.log("Veio do cache");
                     productcache = JSON.parse(productcache);
                     res(productcache);
                 } else {
