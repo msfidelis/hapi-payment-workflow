@@ -12,7 +12,7 @@ Promise.promisifyAll(redis.Multi.prototype);
 const client = redis.createClient(port, host);
 
 client.on('connect', function() {
-    console.log('connected');
+    console.log('REDIS: OK!');
 });
 
 module.exports = client;

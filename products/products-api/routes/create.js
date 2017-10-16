@@ -3,7 +3,6 @@
 const Joi = require('joi');
 const Boom = require('boom');
 const hash = require('take-my-hash');
-
 const cache = require('../configs/cache');
 
 const ProductSchema = require('../models/Products');

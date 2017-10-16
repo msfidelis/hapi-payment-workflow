@@ -4,6 +4,8 @@ const ProductSchema = require('../models/Products');
 
 const Joi = require('joi');
 const Boom = require('boom');
+const hash = require('take-my-hash');
+const cache = require('../configs/cache');
 
 module.exports = [
     {
@@ -12,7 +14,11 @@ module.exports = [
         handler: (req, res) => {
             ProductSchema.remove({ "_id": req.params.id })
                 .then(product => {
+
+                    let productHash = hash.sha1('products' + req.params.id);
+                    cache.del(productHash);
                     res(product).code(204);
+                    
                 })
                 .catch(err => {
                     console.log(err);
