@@ -1,6 +1,7 @@
 'use strict';
 
 module.exports = {
+
     getConnection: (collectionName) => {
 
         let mongo = require('mongoose');
@@ -16,4 +17,5 @@ module.exports = {
         return mongo;
 
     }
+    
 }

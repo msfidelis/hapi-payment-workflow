@@ -10,37 +10,44 @@ const hash = require('take-my-hash');
 const ProductsSchema = require('../models/Products');
 
 module.exports = [
-    
+
+    /**
+     * Listagem de produtos
+     * @default: Itens por página: 10
+     */
     {
         method: "GET",
         path: "/products",
         handler: (req, res) => {
 
             // Paginations configs
-            let page = req.query.page || 1;
-            let limit = req.query.limit || 10;
+            const page = req.query.page || 1;
+            const limit = req.query.limit || 10;
 
-            let options = {
-                select:'_id name price',
+            const options = {
+                select: '_id name price',
                 limit: limit,
                 page: page
             };
 
-            let query = {};
-            
-            // Optional Filters
+            const query = {};
+
+            // Filtros opcionais
             if (req.query.tag) {
                 query.tags = req.query.tag;
             }
 
             if (req.query.name) {
-                query.name =  new RegExp(`^${req.query.name}`, "i");
+                query.name = new RegExp(`^${req.query.name}`, "i");
             }
 
-            let searchhash = hash.sha1(JSON.stringify(query) + JSON.stringify(options));
+            const searchhash = hash.sha1(JSON.stringify(query) + JSON.stringify(options));
 
+            // Procura a busca no cache do redis
             cache.getAsync(searchhash)
                 .then(listcache => {
+
+                    //Responde o cache para o usuário
                     if (listcache) {
                         console.log("Veio do cache");
                         listcache = JSON.parse(listcache);
@@ -50,16 +57,14 @@ module.exports = [
                         ProductsSchema
                             .paginate(query, options)
                             .then(products => {
-                                cache.setAsync(searchhash, JSON.stringify(products), 'EX', 120)
-                                    .then(success => {
-                                        res(products);
-                                    }).catch(err => {
-                                        res(Boom.internal(err));
-                                    });
-                            })
-                            .catch(err => {
-                                res(err);
-                            });
+
+                                //Seta o Item no cache com expiracão de 2 minutos e responde o request
+                                cache
+                                    .setAsync(searchhash, JSON.stringify(products), 'EX', 120)
+                                    .then(success => res(products))
+                                    .catch(err => res(Boom.internal(err)));
+
+                            }).catch(err => res(err));
                     }
                 });
 
@@ -76,45 +81,49 @@ module.exports = [
         }
     },
 
+    /**
+     * Detail do produto
+     * Exibe mais detalhes que na listagem geral
+     * Todo produto deve ser identificado pela hash do _id
+     */
     {
         method: "GET",
         path: "/products/{id}",
         handler: (req, res) => {
 
             let productHash = hash.sha1('products' + req.params.id);
-            
+
             //Procura o id do produto no cache
             cache.getAsync(productHash)
-            .then(productcache => {
-                //Verifica se o item existe no cache
-                if (productcache) {
-                    console.log("Veio do cache");
-                    productcache = JSON.parse(productcache);
-                    res(productcache);
-                } else {
-                    //Caso não exista no cache, o MongoDB é consultado
-                    ProductsSchema.findOne({ "_id": req.params.id })
-                    .then(product => {
-                                
-                        if (!product) {
-                            res(Boom.notFound());
-                        } else {
-                            // Seta o item no Cache após encontrar o mesmo
-                            cache.setAsync(productHash, JSON.stringify(product),'EX', 100) 
-                            .then(success => {
-                                res(product);
-                            });
-                        }
-    
-                    }).catch(err => {
-                        res(Boom.notFound(err));
-                    });
-                }
+                .then(productcache => {
 
-            }).catch(err => {
-                console.log(err);
-                res(Boom.internal(err));
-            });
+                    //Verifica se o item existe no cache
+                    if (productcache) {
+                        console.log("Veio do cache");
+                        productcache = JSON.parse(productcache);
+                        res(productcache);
+                    } else {
+                        //Caso não exista no cache, o MongoDB é consultado
+                        console.log("Não veio do cache");
+                        ProductsSchema.findOne({ "_id": req.params.id })
+                            .then(product => {
+
+                                if (!product) {
+                                    res(Boom.notFound());
+                                } else {
+                                    //Seta o item no Cache após encontrar o mesmo
+                                    cache
+                                        .setAsync(productHash, JSON.stringify(product), 'EX', 100)
+                                        .then(success => res(product));
+                                }
+
+                            }).catch(err => res(Boom.notFound(err)));
+                    }
+
+                }).catch(err => {
+                    console.log(err);
+                    res(Boom.internal(err));
+                });
         },
         config: {
             validate: {

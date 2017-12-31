@@ -7,18 +7,21 @@ const cache = require('../configs/cache');
 
 const ProductSchema = require('../models/Products');
 
-module.exports = [
-    {
-        method: "POST",
-        path: "/products",
-        handler: (req, res) => {
+/**
+ * Cria produtos no Microservice
+ */
+module.exports = [{
+    method: "POST",
+    path: "/products",
+    handler: (req, res) => {
 
-            let product = new ProductSchema(req.payload);
+        let product = new ProductSchema(req.payload);
 
-            product.save()
+        // Salva o produto no MongoDB
+        product.save()
             .then(newProduct => {
 
-                let productHash = hash.sha1('products' + newProduct._id);
+                const productHash = hash.sha1('products' + newProduct._id);
 
                 //Seta o novo item no Redis - Cria já cacheando
                 cache.setAsync(productHash, JSON.stringify(newProduct), 'EX', 100)
@@ -28,21 +31,18 @@ module.exports = [
                         console.log(err);
                         res(Boom.internal(err));
                     });
-                
-            }).catch(err => {
-                res(Boom.internal(err));
-            });
 
-        },
-        config: {
-            validate: {
-                payload: {
-                    name: Joi.string().required(),
-                    description: Joi.string().required(),
-                    price: Joi.number().required(),
-                    tags: Joi.array()
-                }
+            }).catch(err => res(Boom.internal(err)));
+
+    },
+    config: {
+        validate: {
+            payload: {
+                name: Joi.string().required(),
+                description: Joi.string().required(),
+                price: Joi.number().required(),
+                tags: Joi.array()
             }
         }
     }
-];
+}];
