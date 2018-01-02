@@ -11,7 +11,7 @@ Promise.promisifyAll(redis.Multi.prototype);
 
 const client = redis.createClient(port, host);
 
-client.on('connect', function() {
+client.on('connect', () => {
     console.log('REDIS: OK!');
 });
 

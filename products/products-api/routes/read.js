@@ -6,7 +6,7 @@ const Hash = require('take-my-hash');
 
 const cache = require('../configs/cache');
 
-const ProductsSchema = require('../models/Products');
+const ProductService = require('../services/products');
 
 module.exports = [
 
@@ -48,13 +48,11 @@ module.exports = [
 
                     //Responde o cache para o usuário
                     if (listcache) {
-                        console.log("Veio do cache");
                         listcache = JSON.parse(listcache);
                         res(listcache);
                     } else {
-                        console.log("Não veio do cache");
-                        ProductsSchema
-                            .paginate(query, options)
+                        ProductService
+                            .searchProductsWithPagination(query, options)
                             .then(products => {
 
                                 //Seta o Item no cache com expiracão de 2 minutos e responde o request
@@ -98,13 +96,11 @@ module.exports = [
 
                     //Verifica se o item existe no cache
                     if (productcache) {
-                        console.log("Veio do cache");
                         productcache = JSON.parse(productcache);
                         res(productcache);
                     } else {
                         //Caso não exista no cache, o MongoDB é consultado
-                        console.log("Não veio do cache");
-                        ProductsSchema.findOne({ "_id": req.params.id })
+                        ProductService.findProductById(req.params.id )
                             .then(product => {
 
                                 if (!product) {
@@ -119,10 +115,7 @@ module.exports = [
                             }).catch(err => res(Boom.notFound(err)));
                     }
 
-                }).catch(err => {
-                    console.log(err);
-                    res(Boom.internal(err));
-                });
+                }).catch(err => res(Boom.internal(err)));
         },
         config: {
             validate: {

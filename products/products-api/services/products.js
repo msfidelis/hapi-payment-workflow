@@ -8,7 +8,7 @@ const ProductService = {
         return new ProductSchema(productValues).save();
     },    
     updateProduct : (id, productValues) => { 
-        return ProductSchema.findByIdAndUpdate(id, {$set: req.payload}, {new: true});
+        return ProductSchema.findByIdAndUpdate(id, {$set: productValues}, {new: true});
     },
     findProductById: id => {
         return ProductSchema.findOne({_id: id});
@@ -22,4 +22,4 @@ const ProductService = {
 
 }
 
-module.exports = ProductsService;
+module.exports = ProductService;
