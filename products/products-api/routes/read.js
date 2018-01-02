@@ -5,7 +5,6 @@ const Boom = require('boom');
 const Hash = require('take-my-hash');
 
 const cache = require('../configs/cache');
-const hash = require('take-my-hash');
 
 const ProductsSchema = require('../models/Products');
 
@@ -41,7 +40,7 @@ module.exports = [
                 query.name = new RegExp(`^${req.query.name}`, "i");
             }
 
-            const searchhash = hash.sha1(JSON.stringify(query) + JSON.stringify(options));
+            const searchhash = Hash.sha1(JSON.stringify(query) + JSON.stringify(options));
 
             // Procura a busca no cache do redis
             cache.getAsync(searchhash)
@@ -91,7 +90,7 @@ module.exports = [
         path: "/products/{id}",
         handler: (req, res) => {
 
-            let productHash = hash.sha1('products' + req.params.id);
+            const productHash = Hash.sha1('products' + req.params.id);
 
             //Procura o id do produto no cache
             cache.getAsync(productHash)

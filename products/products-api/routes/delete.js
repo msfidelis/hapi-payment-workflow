@@ -17,7 +17,7 @@ module.exports = [
             ProductSchema.remove({ "_id": req.params.id })
                 .then(product => {
 
-                    let productHash = hash.sha1('products' + req.params.id);
+                    const productHash = hash.sha1('products' + req.params.id);
 
                     // Deleta o item do cache caso exista
                     cache.del(productHash);

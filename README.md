@@ -21,4 +21,6 @@
 * [Código](https://github.com/msfidelis/hapi-payment-workflow/tree/v2)
 
 
-
+### Hapi.JS — Criando Microservices #03 :: Camadas de Cache da API com Redis
+* [Artigo]()
+* [Código](https://github.com/msfidelis/hapi-payment-workflow/tree/v3)

@@ -20,8 +20,7 @@ module.exports = [
         handler: (req, res) => {
 
             //Encontra o Item e atualiza o mesmo
-            ProductSchema
-                .findByIdAndUpdate(req.params.id, {$set: req.payload}, {new: true})
+            ProductSchema.findByIdAndUpdate(req.params.id, {$set: req.payload}, {new: true})
                 .then(result => {
 
                     //Caso o mesmo não exista, retorna um status de 404
@@ -30,7 +29,7 @@ module.exports = [
                         res(Boom.notFound(message));
                     } else {
 
-                        let productHash = hash.sha1('products' + req.params.id);
+                        const productHash = hash.sha1('products' + req.params.id);
 
                         // Seta o item atualizado no cache
                         cache.setAsync(productHash, JSON.stringify(result), 'EX', 100)
@@ -57,8 +56,8 @@ module.exports = [
                     price: Joi.number(),
                     tags: Joi.array()
                 }, 
-                query: {
-                    id: Joi.string().required()
+                params: {
+                    id: Joi.string().required().min(20)
                 }
             }
         }
