@@ -5,7 +5,6 @@ const Boom = require('boom');
 const Hash = require('take-my-hash');
 
 const cache = require('../configs/cache');
-
 const ProductService = require('../services/products');
 
 module.exports = [
@@ -100,16 +99,16 @@ module.exports = [
                         res(productcache);
                     } else {
                         //Caso não exista no cache, o MongoDB é consultado
-                        ProductService.findProductById(req.params.id )
-                            .then(product => {
+                        ProductService
+                        .findProductById(req.params.id )
+                        .then(product => {
 
                                 if (!product) {
                                     res(Boom.notFound());
                                 } else {
-                                    //Seta o item no Cache após encontrar o mesmo
-                                    cache
-                                        .setAsync(productHash, JSON.stringify(product), 'EX', 100)
-                                        .then(success => res(product));
+                                    cache.setAsync(productHash, JSON.stringify(product), 'EX', 100)
+                                        .then(success => res(product))
+                                        .catch(err => err(Boom.internal(err)));
                                 }
 
                             }).catch(err => res(Boom.notFound(err)));

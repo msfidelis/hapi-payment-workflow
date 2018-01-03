@@ -22,7 +22,7 @@ const ProductsService = require('../services/products');
 module.exports = [{
     method: "POST",
     path: "/products",
-    handler: (req, res) => {
+    handler: async (req, res) => {
 
         ProductsService.createProduct(req.payload)
             .then(newProduct => {
