@@ -24,3 +24,8 @@
 ### Hapi.JS — Criando Microservices #03 :: Camadas de Cache da API com Redis
 * [Artigo]()
 * [Código](https://github.com/msfidelis/hapi-payment-workflow/tree/v3)
+
+
+### Hapi.JS — Criando Microservices #04 :: Refactor — Melhorando o Desacoplamento nas Camadas de Persistencia
+* [Artigo]()
+* [Código](https://github.com/msfidelis/hapi-payment-workflow/tree/v4)
