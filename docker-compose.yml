@@ -21,7 +21,7 @@ services:
   products-mongodb:
     image: mongo:3.0.4
     ports:
-      - "27017"
+      - "27001:27017"
     volumes:
       - './temp/products/data:/data/db'
     networks:

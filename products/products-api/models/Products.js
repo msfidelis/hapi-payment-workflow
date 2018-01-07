@@ -1,7 +1,10 @@
 'use strict';
 
 const db = require('../configs/mongo');
-const mongo = db.getConnection('products');
+
+const PRODUCT_COLLECTION = process.env.PRODUCT_COLLECTION || 'products';
+
+const mongo = db.getConnection(PRODUCT_COLLECTION);
 
 const pagination = require('mongoose-paginate');
 

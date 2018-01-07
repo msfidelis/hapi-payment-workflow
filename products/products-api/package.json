@@ -4,9 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "mocha",
-    "dev": "nodemon index.js",
-    "start": "node index.js"
+    "unit-test": "ENV=test; mocha --opts ./tests/mocha.opts ./tests/unit",
+    "dev": "ENV=dev; nodemon index.js",
+    "start": "ENV=production; node index.js"
   },
   "keywords": [],
   "author": "",
@@ -14,6 +14,7 @@
   "dependencies": {
     "bluebird": "^3.5.1",
     "boom": "^6.0.0",
+    "dotenv": "^4.0.0",
     "hapi": "^16.6.2",
     "hapi-router": "^3.5.0",
     "joi": "^11.3.4",
@@ -25,6 +26,7 @@
   },
   "devDependencies": {
     "chai": "^4.1.2",
-    "mocha": "^4.1.0"
+    "mocha": "^4.1.0",
+    "supertest": "^3.0.0"
   }
 }

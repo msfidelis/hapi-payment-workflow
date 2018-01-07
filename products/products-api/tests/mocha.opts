@@ -1,0 +1,2 @@
+--recursive
+--require ./tests/test-envs.js
