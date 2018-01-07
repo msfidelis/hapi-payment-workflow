@@ -11,7 +11,7 @@ const pagination = require('mongoose-paginate');
 const productsSchema = mongo.Schema({
     name: { type: String, required: true, trim: true },
     description: { type: String, required: true, trim: true },
-    price: { type: String },
+    price: { type: Number },
     tags: { type: Array, default: [] },
     updated_at: { type: Date, default: Date.now },
 });
