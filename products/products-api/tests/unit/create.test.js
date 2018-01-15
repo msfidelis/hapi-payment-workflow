@@ -9,8 +9,7 @@ const productService = require('../../services/products');
 describe("#Criação de Produtos", () => {
 
     it("#Cadastrando um produto com sucesso", (done) => {
-
-
+        
         const productMock = {
             name: "Frigobar topzera",
             description: "Sonho de consumo pra sala de estar", 
@@ -71,7 +70,6 @@ describe("#Criação de Produtos", () => {
             done();
         });
 
-
     });
 
 
@@ -91,7 +89,6 @@ describe("#Criação de Produtos", () => {
             expect(error.errors.description.message).to.be.equal(expectedMessage);
             done();
         });
-
 
     });
     
